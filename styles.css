@@ -11,11 +11,9 @@ h1 {
 }
 
 #game button {
-    padding: 15px 30px;
+    padding: 10px;
     margin: 10px;
-    font-size: 18px;
     background-color: #007bff;
-    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -25,7 +23,20 @@ h1 {
     background-color: #0056b3;
 }
 
+/* Исправляем размер картинок */
+#game button img {
+    width: 50px; /* Устанавливаем ширину картинки */
+    height: 50px; /* Устанавливаем высоту картинки */
+    display: block; /* Убираем лишние отступы */
+}
+
 #result {
     font-size: 20px;
     margin-top: 20px;
+}
+
+/* Адаптация для Telegram */
+html, body {
+    height: 100%;
+    overflow: auto;
 }
