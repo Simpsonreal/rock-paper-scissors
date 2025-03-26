@@ -17,7 +17,7 @@ buttons.forEach(button => {
 
         try {
             console.log('Отправка запроса на сервер...');
-            const response = await fetch('https://shrouded-reaches-20295-c88fb12a8965.herokuapp.com/game', {
+            const response = await fetch('https://3fce-213-207-159-34.ngrok-free.app', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerChoice, computerChoice, result: winner })
