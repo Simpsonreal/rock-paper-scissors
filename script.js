@@ -11,15 +11,26 @@ buttons.forEach(button => {
         const computerChoice = choices[Math.floor(Math.random() * 3)];
         const winner = determineWinner(playerChoice, computerChoice);
 
+        console.log('Игрок выбрал:', playerChoice);
+        console.log('Компьютер выбрал:', computerChoice);
+        console.log('Результат:', winner);
+
         try {
-            const response = await fetch('http://localhost:3000/game', {
+            console.log('Отправка запроса на сервер...');
+            const response = await fetch('https://shrouded-reaches-20295-c88fb12a8965.herokuapp.com/game', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerChoice, computerChoice, result: winner })
             });
+            console.log('Ответ от сервера:', response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
+            console.log('Данные от сервера:', data);
             result.textContent = `Ты выбрал: ${playerChoice}. Компьютер выбрал: ${computerChoice}. ${winner} Счет: ${data.stats.playerScore}:${data.stats.computerScore}`;
         } catch (error) {
+            console.error('Ошибка при отправке запроса:', error);
             result.textContent = `Ошибка: ${error.message}`;
         }
     });
