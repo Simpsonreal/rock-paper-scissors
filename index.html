@@ -14,12 +14,16 @@
             background: url('images/lowpoly-background.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Более мягкая тень */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         h1 {
             font-size: 2.5em;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             margin-bottom: 20px;
         }
         #game {
@@ -29,38 +33,50 @@
             margin: 20px 0;
         }
         button {
-            background: linear-gradient(135deg, #6ab7f5, #3a8ed6); /* Low-poly градиент */
+            background: linear-gradient(135deg, #a8e6cf, #7cc4a4); /* Пастельный зеленый градиент */
             border: none;
             border-radius: 5px;
             padding: 20px;
             cursor: pointer;
             transition: transform 0.1s, box-shadow 0.2s;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px -5px 10px rgba(255, 255, 255, 0.1); /* Эффект граней */
-            font-size: 2em;
-            color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.2);
+        }
+        button img {
+            width: 50px;
+            height: 50px;
         }
         button:hover {
             transform: scale(1.1);
-            box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.4), -8px -8px 15px rgba(255, 255, 255, 0.2);
+            box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.3), -8px -8px 15px rgba(255, 255, 255, 0.3);
         }
         button:active {
             transform: scale(0.95);
-            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2), -3px -3px 5px rgba(255, 255, 255, 0.1);
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1), -3px -3px 5px rgba(255, 255, 255, 0.1);
+        }
+        #character {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        #character img {
+            width: 100px;
         }
         #result {
             font-size: 1.2em;
             margin-top: 20px;
             padding: 15px;
-            background: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
-            border: 2px solid #6ab7f5;
+            background: rgba(255, 255, 255, 0.2); /* Полупрозрачный белый фон */
+            border: 2px solid #ffd3b6; /* Пастельный оранжевый */
             border-radius: 5px;
             color: #fff;
             display: inline-block;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            bottom: 120px;
+            right: 50px;
         }
         #reset {
-            background: linear-gradient(135deg, #ff6b6b, #d63a3a); /* Красный low-poly градиент */
+            background: linear-gradient(135deg, #ffd3b6, #ffaaa5); /* Пастельный оранжевый градиент */
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
@@ -68,11 +84,11 @@
             color: #fff;
             font-size: 1em;
             transition: transform 0.1s, box-shadow 0.2s;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3), -5px -5px 10px rgba(255, 255, 255, 0.1);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.2);
         }
         #reset:hover {
             transform: scale(1.05);
-            box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.4), -8px -8px 15px rgba(255, 255, 255, 0.2);
+            box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.3), -8px -8px 15px rgba(255, 255, 255, 0.3);
         }
         #history {
             margin-top: 20px;
@@ -82,23 +98,22 @@
             padding: 0;
         }
         #history-list li {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(255, 255, 255, 0.2); /* Полупрозрачный белый фон */
             margin: 5px auto;
             padding: 10px;
-            border: 2px solid #6ab7f5;
+            border: 2px solid #ffd3b6; /* Пастельный оранжевый */
             border-radius: 5px;
             color: #fff;
             max-width: 400px;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
         }
-        /* Декоративные треугольники */
         .triangle {
             position: absolute;
             width: 0;
             height: 0;
             border-left: 50px solid transparent;
             border-right: 50px solid transparent;
-            border-bottom: 86px solid rgba(106, 183, 245, 0.5); /* Полупрозрачный low-poly треугольник */
+            border-bottom: 86px solid rgba(178, 204, 255, 0.5); /* Пастельный голубой */
             animation: float 5s infinite ease-in-out;
         }
         #triangle1 {
@@ -108,7 +123,7 @@
         #triangle2 {
             top: 15%;
             right: 10%;
-            border-bottom-color: rgba(255, 107, 107, 0.5);
+            border-bottom-color: rgba(255, 178, 217, 0.5); /* Пастельный розовый */
         }
         @keyframes float {
             0% { transform: translateY(0); }
@@ -122,9 +137,12 @@
     <div class="triangle" id="triangle2"></div>
     <h1>Камень, Ножницы, Бумага</h1>
     <div id="game">
-        <button id="rock">🪨</button>
-        <button id="scissors">✂️</button>
-        <button id="paper">📄</button>
+        <button id="rock"><img src="images/lowpoly-rock.png" alt="Камень"></button>
+        <button id="scissors"><img src="images/lowpoly-scissors.png" alt="Ножницы"></button>
+        <button id="paper"><img src="images/lowpoly-paper.png" alt="Бумага"></button>
+    </div>
+    <div id="character">
+        <img src="images/lowpoly-character.png" alt="Персонаж">
     </div>
     <div id="result"></div>
     <div id="history">
