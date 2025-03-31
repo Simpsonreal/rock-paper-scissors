@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Инициализация статистики из localStorage
     let stats = JSON.parse(localStorage.getItem('gameStats')) || {
         playerScore: 0,
         computerScore: 0,
@@ -11,6 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const result = document.getElementById("result");
     const historyList = document.getElementById("history-list");
     const resetButton = document.getElementById("reset");
+    const scoreDisplay = document.getElementById("score");
+
+    const updateScore = () => {
+        scoreDisplay.textContent = `Счет: ${stats.playerScore}:${stats.computerScore}`;
+    };
 
     buttons.forEach(button => {
         button.addEventListener("click", () => {
@@ -22,26 +26,21 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log('Компьютер выбрал:', computerChoice);
             console.log('Результат:', winner);
 
-            // Обновляем статистику
             stats.games.push({ playerChoice, computerChoice, result: winner });
             if (winner === "Ты выиграл!") stats.playerScore++;
             if (winner === "Компьютер выиграл!") stats.computerScore++;
 
-            // Ограничиваем историю до 5 последних игр
             if (stats.games.length > 5) stats.games.shift();
 
-            // Сохраняем статистику в localStorage
             localStorage.setItem('gameStats', JSON.stringify(stats));
 
-            // Отображаем результат
-            result.textContent = `Ты выбрал: ${playerChoice}. Компьютер выбрал: ${computerChoice}. ${winner} Счет: ${stats.playerScore}:${stats.computerScore}`;
+            result.textContent = `Ты выбрал: ${playerChoice}. Компьютер выбрал: ${computerChoice}. ${winner}`;
+            updateScore();
 
-            // Обновляем историю
             updateHistory();
         });
     });
 
-    // Функция сброса статистики
     resetButton.addEventListener("click", () => {
         stats = {
             playerScore: 0,
@@ -49,11 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
             games: []
         };
         localStorage.setItem('gameStats', JSON.stringify(stats));
-        result.textContent = "Статистика сброшена! Счет: 0:0";
+        result.textContent = "Статистика сброшена!";
+        updateScore();
         updateHistory();
     });
 
-    // Функция для обновления истории
     function updateHistory() {
         historyList.innerHTML = '';
         stats.games.forEach(game => {
@@ -63,8 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Инициализация истории при загрузке
     updateHistory();
+    updateScore();
 
     function determineWinner(player, computer) {
         if (player === computer) {
