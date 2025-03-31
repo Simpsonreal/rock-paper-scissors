@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Камень Ножницы Бумага</title>
+    <title>Камень, Ножницы, Бумага</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -14,7 +14,7 @@
             background: url('images/lowpoly-background.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #fff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Более мягкая тень */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -33,7 +33,7 @@
             margin: 20px 0;
         }
         button {
-            background: linear-gradient(135deg, #a8e6cf, #7cc4a4); /* Пастельный зеленый градиент */
+            background: linear-gradient(135deg, #a8e6cf, #7cc4a4);
             border: none;
             border-radius: 5px;
             padding: 20px;
@@ -65,8 +65,8 @@
             font-size: 1.2em;
             margin-top: 20px;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.2); /* Полупрозрачный белый фон */
-            border: 2px solid #ffd3b6; /* Пастельный оранжевый */
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #ffd3b6;
             border-radius: 5px;
             color: #fff;
             display: inline-block;
@@ -76,7 +76,7 @@
             right: 50px;
         }
         #reset {
-            background: linear-gradient(135deg, #ffd3b6, #ffaaa5); /* Пастельный оранжевый градиент */
+            background: linear-gradient(135deg, #ffd3b6, #ffaaa5);
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
@@ -98,10 +98,10 @@
             padding: 0;
         }
         #history-list li {
-            background: rgba(255, 255, 255, 0.2); /* Полупрозрачный белый фон */
+            background: rgba(255, 255, 255, 0.2);
             margin: 5px auto;
             padding: 10px;
-            border: 2px solid #ffd3b6; /* Пастельный оранжевый */
+            border: 2px solid #ffd3b6;
             border-radius: 5px;
             color: #fff;
             max-width: 400px;
@@ -113,7 +113,7 @@
             height: 0;
             border-left: 50px solid transparent;
             border-right: 50px solid transparent;
-            border-bottom: 86px solid rgba(178, 204, 255, 0.5); /* Пастельный голубой */
+            border-bottom: 86px solid rgba(178, 204, 255, 0.5);
             animation: float 5s infinite ease-in-out;
         }
         #triangle1 {
@@ -123,7 +123,7 @@
         #triangle2 {
             top: 15%;
             right: 10%;
-            border-bottom-color: rgba(255, 178, 217, 0.5); /* Пастельный розовый */
+            border-bottom-color: rgba(255, 178, 217, 0.5);
         }
         @keyframes float {
             0% { transform: translateY(0); }
@@ -135,9 +135,8 @@
 <body>
     <div class="triangle" id="triangle1"></div>
     <div class="triangle" id="triangle2"></div>
-    <h1>Камень, Ножницы, Бумага</h1>
+    <h1>Камень, Ножницы, Бумага <span id="score">0:0</span></h1>
     <div id="game">
-
         <button id="rock"><img src="images/Rock.png" alt="Камень"></button>
         <button id="scissors"><img src="images/Scissors.png" alt="Ножницы"></button>
         <button id="paper"><img src="images/Paper.png" alt="Бумага"></button>
@@ -151,6 +150,7 @@
         <ul id="history-list"></ul>
     </div>
     <button id="reset">Сбросить статистику</button>
+
     <script src="script.js"></script>
 </body>
-
+</html>
