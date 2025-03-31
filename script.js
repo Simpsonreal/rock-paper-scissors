@@ -17,7 +17,7 @@ buttons.forEach(button => {
 
         try {
             console.log('Отправка запроса на сервер...');
-            const response = await fetch('https://89b7-46-199-231-63.ngrok-free.app/', {
+            const response = await fetch('https://89b7-46-199-231-63.ngrok-free.app/game', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerChoice, computerChoice, result: winner })
