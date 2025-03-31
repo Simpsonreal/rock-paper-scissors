@@ -1,12 +1,16 @@
-let playerScore = 0;
-let computerScore = 0;
+// Инициализация статистики из localStorage
+let stats = JSON.parse(localStorage.getItem('gameStats')) || {
+    playerScore: 0,
+    computerScore: 0,
+    games: []
+};
 
 const choices = ["rock", "scissors", "paper"];
 const buttons = document.querySelectorAll("#game button");
 const result = document.getElementById("result");
 
 buttons.forEach(button => {
-    button.addEventListener("click", async () => {
+    button.addEventListener("click", () => {
         const playerChoice = button.id;
         const computerChoice = choices[Math.floor(Math.random() * 3)];
         const winner = determineWinner(playerChoice, computerChoice);
@@ -15,24 +19,16 @@ buttons.forEach(button => {
         console.log('Компьютер выбрал:', computerChoice);
         console.log('Результат:', winner);
 
-        try {
-            console.log('Отправка запроса на сервер...');
-            const response = await fetch('https://4352-46-199-231-63.ngrok-free.app/game', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerChoice, computerChoice, result: winner })
-            });
-            console.log('Ответ от сервера:', response);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            console.log('Данные от сервера:', data);
-            result.textContent = `Ты выбрал: ${playerChoice}. Компьютер выбрал: ${computerChoice}. ${winner} Счет: ${data.stats.playerScore}:${data.stats.computerScore}`;
-        } catch (error) {
-            console.error('Ошибка при отправке запроса:', error);
-            result.textContent = `Ошибка: ${error.message}`;
-        }
+        // Обновляем статистику
+        stats.games.push({ playerChoice, computerChoice, result: winner });
+        if (winner === "Ты выиграл!") stats.playerScore++;
+        if (winner === "Компьютер выиграл!") stats.computerScore++;
+
+        // Сохраняем статистику в localStorage
+        localStorage.setItem('gameStats', JSON.stringify(stats));
+
+        // Отображаем результат
+        result.textContent = `Ты выбрал: ${playerChoice}. Компьютер выбрал: ${computerChoice}. ${winner} Счет: ${stats.playerScore}:${stats.computerScore}`;
     });
 });
 
@@ -45,9 +41,7 @@ function determineWinner(player, computer) {
         (player === "scissors" && computer === "paper") ||
         (player === "paper" && computer === "rock")
     ) {
-        playerScore++;
         return "Ты выиграл!";
     }
-    computerScore++;
     return "Компьютер выиграл!";
 }
