@@ -8,6 +8,7 @@ let stats = JSON.parse(localStorage.getItem('gameStats')) || {
 const choices = ["rock", "scissors", "paper"];
 const buttons = document.querySelectorAll("#game button");
 const result = document.getElementById("result");
+const resetButton = document.getElementById("reset");
 
 buttons.forEach(button => {
     button.addEventListener("click", () => {
@@ -30,6 +31,17 @@ buttons.forEach(button => {
         // Отображаем результат
         result.textContent = `Ты выбрал: ${playerChoice}. Компьютер выбрал: ${computerChoice}. ${winner} Счет: ${stats.playerScore}:${stats.computerScore}`;
     });
+});
+
+// Функция сброса статистики
+resetButton.addEventListener("click", () => {
+    stats = {
+        playerScore: 0,
+        computerScore: 0,
+        games: []
+    };
+    localStorage.setItem('gameStats', JSON.stringify(stats));
+    result.textContent = "Статистика сброшена! Счет: 0:0";
 });
 
 function determineWinner(player, computer) {
