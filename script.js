@@ -1,81 +1,87 @@
-document.addEventListener("DOMContentLoaded", () => {
-    let stats = JSON.parse(localStorage.getItem('gameStats')) || {
+const choices = ["rock", "paper", "scissors"];
+const buttons = document.querySelectorAll("#game button");
+const resultDisplay = document.getElementById("result");
+const historyList = document.getElementById("history-list");
+const resetButton = document.getElementById("reset");
+const scoreDisplay = document.getElementById("score");
+
+let stats = {
+    playerScore: 0,
+    computerScore: 0,
+    history: []
+};
+
+// Загрузка статистики из localStorage
+if (localStorage.getItem("gameStats")) {
+    stats = JSON.parse(localStorage.getItem("gameStats"));
+    updateScore();
+    updateHistory();
+}
+
+function updateScore() {
+    scoreDisplay.textContent = `${stats.playerScore}:${stats.computerScore}`;
+}
+
+function updateHistory() {
+    historyList.innerHTML = "";
+    stats.history.forEach((game, index) => {
+        const li = document.createElement("li");
+        li.textContent = `Игра ${index + 1}: ${game}`;
+        historyList.appendChild(li);
+    });
+}
+
+function getComputerChoice() {
+    const randomIndex = Math.floor(Math.random() * choices.length);
+    return choices[randomIndex];
+}
+
+function determineWinner(playerChoice, computerChoice) {
+    if (playerChoice === computerChoice) {
+        return "Ничья!";
+    }
+    if (
+        (playerChoice === "rock" && computerChoice === "scissors") ||
+        (playerChoice === "scissors" && computerChoice === "paper") ||
+        (playerChoice === "paper" && computerChoice === "rock")
+    ) {
+        stats.playerScore++;
+        updateScore();
+        return "Вы выиграли!";
+    }
+    stats.computerScore++;
+    updateScore();
+    return "Компьютер выиграл!";
+}
+
+function playGame(playerChoice) {
+    const computerChoice = getComputerChoice();
+    const result = determineWinner(playerChoice, computerChoice);
+    resultDisplay.textContent = `Вы выбрали ${playerChoice}, компьютер выбрал ${computerChoice}. ${result}`;
+    
+    // Добавляем результат в историю
+    stats.history.push(`Вы: ${playerChoice}, Компьютер: ${computerChoice} - ${result}`);
+    updateHistory();
+    
+    // Сохраняем статистику в localStorage
+    localStorage.setItem("gameStats", JSON.stringify(stats));
+}
+
+buttons.forEach(button => {
+    button.addEventListener("click", () => {
+        const playerChoice = button.id;
+        playGame(playerChoice);
+    });
+});
+
+resetButton.addEventListener("click", () => {
+    stats = {
         playerScore: 0,
         computerScore: 0,
-        games: []
+        history: []
     };
-
-    const choices = ["rock", "scissors", "paper"];
-    const buttons = document.querySelectorAll("#game button");
-    const result = document.getElementById("result");
-    const historyList = document.getElementById("history-list");
-    const resetButton = document.getElementById("reset");
-    const scoreDisplay = document.getElementById("score");
-
-    const updateScore = () => {
-        scoreDisplay.textContent = `Счет: ${stats.playerScore}:${stats.computerScore}`;
-    };
-
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            const playerChoice = button.id;
-            const computerChoice = choices[Math.floor(Math.random() * 3)];
-            const winner = determineWinner(playerChoice, computerChoice);
-
-            console.log('Игрок выбрал:', playerChoice);
-            console.log('Компьютер выбрал:', computerChoice);
-            console.log('Результат:', winner);
-
-            stats.games.push({ playerChoice, computerChoice, result: winner });
-            if (winner === "Ты выиграл!") stats.playerScore++;
-            if (winner === "Компьютер выиграл!") stats.computerScore++;
-
-            if (stats.games.length > 5) stats.games.shift();
-
-            localStorage.setItem('gameStats', JSON.stringify(stats));
-
-            result.textContent = `Ты выбрал: ${playerChoice}. Компьютер выбрал: ${computerChoice}. ${winner}`;
-            updateScore();
-
-            updateHistory();
-        });
-    });
-
-    resetButton.addEventListener("click", () => {
-        stats = {
-            playerScore: 0,
-            computerScore: 0,
-            games: []
-        };
-        localStorage.setItem('gameStats', JSON.stringify(stats));
-        result.textContent = "Статистика сброшена!";
-        updateScore();
-        updateHistory();
-    });
-
-    function updateHistory() {
-        historyList.innerHTML = '';
-        stats.games.forEach(game => {
-            const li = document.createElement('li');
-            li.textContent = `Ты: ${game.playerChoice}, Компьютер: ${game.computerChoice}, Результат: ${game.result}`;
-            historyList.appendChild(li);
-        });
-    }
-
-    updateHistory();
+    localStorage.setItem("gameStats", JSON.stringify(stats));
     updateScore();
-
-    function determineWinner(player, computer) {
-        if (player === computer) {
-            return "Ничья!";
-        }
-        if (
-            (player === "rock" && computer === "scissors") ||
-            (player === "scissors" && computer === "paper") ||
-            (player === "paper" && computer === "rock")
-        ) {
-            return "Ты выиграл!";
-        }
-        return "Компьютер выиграл!";
-    }
+    updateHistory();
+    resultDisplay.textContent = "";
 });
