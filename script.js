@@ -9,6 +9,16 @@ try {
     alert("Ошибка: localStorage не доступен. Статистика может не сохраняться.");
 }
 
+// Очищаем localStorage при старте, чтобы избежать проблем с повреждёнными данными
+if (localStorageAvailable) {
+    try {
+        localStorage.removeItem("gameStats");
+    } catch (e) {
+        console.error("Не удалось очистить localStorage: ", e);
+        alert("Не удалось очистить localStorage: " + e.message);
+    }
+}
+
 const choices = ["rock", "paper", "scissors"];
 const buttons = document.querySelectorAll("#game button");
 const resultDisplay = document.getElementById("result");
@@ -26,11 +36,21 @@ let stats = {
 if (localStorageAvailable && localStorage.getItem("gameStats")) {
     try {
         stats = JSON.parse(localStorage.getItem("gameStats"));
+        // Проверяем, что stats.history существует, и инициализируем, если нет
+        if (!stats.history || !Array.isArray(stats.history)) {
+            stats.history = [];
+        }
         updateScore();
         updateHistory();
     } catch (e) {
         console.error("Ошибка при загрузке статистики: ", e);
         alert("Ошибка при загрузке статистики: " + e.message);
+        // Сбрасываем stats, если данные повреждены
+        stats = {
+            playerScore: 0,
+            computerScore: 0,
+            history: []
+        };
     }
 }
 
@@ -48,6 +68,10 @@ function updateHistory() {
         return;
     }
     historyList.innerHTML = "";
+    // Проверяем, что stats.history существует
+    if (!stats.history || !Array.isArray(stats.history)) {
+        stats.history = [];
+    }
     stats.history.forEach((game, index) => {
         const li = document.createElement("li");
         const parts = game.split(", ");
@@ -119,6 +143,10 @@ function playGame(playerChoice) {
             alert("Ошибка: resultDisplay не найден");
         }
 
+        // Проверяем, что stats.history существует
+        if (!stats.history || !Array.isArray(stats.history)) {
+            stats.history = [];
+        }
         stats.history.push(`Вы: ${playerChoice}, Компьютер: ${computerChoice} - ${result}`);
         updateHistory();
 
