@@ -6,7 +6,6 @@ try {
 } catch (e) {
     console.error("localStorage не доступен: ", e);
     localStorageAvailable = false;
-    alert("Ошибка: localStorage не доступен. Статистика может не сохраняться.");
 }
 
 // Очищаем localStorage при старте, чтобы избежать проблем с повреждёнными данными
@@ -15,7 +14,6 @@ if (localStorageAvailable) {
         localStorage.removeItem("gameStats");
     } catch (e) {
         console.error("Не удалось очистить localStorage: ", e);
-        alert("Не удалось очистить localStorage: " + e.message);
     }
 }
 
@@ -44,7 +42,6 @@ if (localStorageAvailable && localStorage.getItem("gameStats")) {
         updateHistory();
     } catch (e) {
         console.error("Ошибка при загрузке статистики: ", e);
-        alert("Ошибка при загрузке статистики: " + e.message);
         // Сбрасываем stats, если данные повреждены
         stats = {
             playerScore: 0,
@@ -58,13 +55,13 @@ function updateScore() {
     if (scoreDisplay) {
         scoreDisplay.textContent = `${stats.playerScore}:${stats.computerScore}`;
     } else {
-        alert("Ошибка: scoreDisplay не найден");
+        console.error("scoreDisplay не найден");
     }
 }
 
 function updateHistory() {
     if (!historyList) {
-        alert("Ошибка: historyList не найден");
+        console.error("historyList не найден");
         return;
     }
     historyList.innerHTML = "";
@@ -140,7 +137,7 @@ function playGame(playerChoice) {
             resultDisplay.appendChild(computerChoiceElement);
             resultDisplay.appendChild(resultText);
         } else {
-            alert("Ошибка: resultDisplay не найден");
+            console.error("resultDisplay не найден");
         }
 
         // Проверяем, что stats.history существует
@@ -155,12 +152,10 @@ function playGame(playerChoice) {
                 localStorage.setItem("gameStats", JSON.stringify(stats));
             } catch (e) {
                 console.error("Не удалось сохранить статистику в localStorage: ", e);
-                alert("Не удалось сохранить статистику: " + e.message);
             }
         }
     } catch (e) {
         console.error("Ошибка в playGame: ", e);
-        alert("Ошибка в playGame: " + e.message);
     }
 }
 
@@ -169,30 +164,26 @@ if (buttons && buttons.length > 0) {
     buttons.forEach(button => {
         button.addEventListener("touchstart", (e) => {
             e.preventDefault();
-            alert("Событие touchstart сработало для кнопки: " + button.id);
             const playerChoice = button.id;
             playGame(playerChoice);
         });
         button.addEventListener("click", () => {
-            alert("Событие click сработало для кнопки: " + button.id);
             const playerChoice = button.id;
             playGame(playerChoice);
         });
         button.addEventListener("mousedown", () => {
-            alert("Событие mousedown сработало для кнопки: " + button.id);
             const playerChoice = button.id;
             playGame(playerChoice);
         });
     });
 } else {
-    alert("Ошибка: кнопки игры не найдены");
+    console.error("Кнопки игры не найдены");
 }
 
 // Проверяем, что кнопка сброса существует, и добавляем обработчики
 if (resetButton) {
     resetButton.addEventListener("touchstart", (e) => {
         e.preventDefault();
-        alert("Событие touchstart сработало для кнопки сброса");
         stats = {
             playerScore: 0,
             computerScore: 0,
@@ -203,7 +194,6 @@ if (resetButton) {
                 localStorage.setItem("gameStats", JSON.stringify(stats));
             } catch (e) {
                 console.error("Не удалось сохранить статистику в localStorage: ", e);
-                alert("Не удалось сохранить статистику: " + e.message);
             }
         }
         updateScore();
@@ -212,7 +202,6 @@ if (resetButton) {
     });
 
     resetButton.addEventListener("click", () => {
-        alert("Событие click сработало для кнопки сброса");
         stats = {
             playerScore: 0,
             computerScore: 0,
@@ -223,7 +212,6 @@ if (resetButton) {
                 localStorage.setItem("gameStats", JSON.stringify(stats));
             } catch (e) {
                 console.error("Не удалось сохранить статистику в localStorage: ", e);
-                alert("Не удалось сохранить статистику: " + e.message);
             }
         }
         updateScore();
@@ -232,7 +220,6 @@ if (resetButton) {
     });
 
     resetButton.addEventListener("mousedown", () => {
-        alert("Событие mousedown сработало для кнопки сброса");
         stats = {
             playerScore: 0,
             computerScore: 0,
@@ -243,7 +230,6 @@ if (resetButton) {
                 localStorage.setItem("gameStats", JSON.stringify(stats));
             } catch (e) {
                 console.error("Не удалось сохранить статистику в localStorage: ", e);
-                alert("Не удалось сохранить статистику: " + e.message);
             }
         }
         updateScore();
@@ -251,5 +237,5 @@ if (resetButton) {
         if (resultDisplay) resultDisplay.textContent = "";
     });
 } else {
-    alert("Ошибка: кнопка сброса не найдена");
+    console.error("Кнопка сброса не найдена");
 }
