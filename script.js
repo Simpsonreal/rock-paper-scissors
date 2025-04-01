@@ -26,7 +26,12 @@ function updateHistory() {
     historyList.innerHTML = "";
     stats.history.forEach((game, index) => {
         const li = document.createElement("li");
-        li.textContent = `Игра ${index + 1}: ${game}`;
+        // Разбиваем строку на части: "Вы: scissors, Компьютер: paper - Вы выиграли!"
+        const parts = game.split(", ");
+        const playerPart = parts[0].split(": ")[1]; // "scissors"
+        const computerPart = parts[1].split(": ")[1].split(" - ")[0]; // "paper"
+        const resultPart = game.split(" - ")[1]; // "Вы выиграли!"
+        li.innerHTML = `Игра ${index + 1}: Вы: <strong>${playerPart}</strong>, Компьютер: <strong>${computerPart}</strong> - ${resultPart}`;
         historyList.appendChild(li);
     });
 }
