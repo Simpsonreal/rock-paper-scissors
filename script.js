@@ -57,7 +57,7 @@ function determineWinner(playerChoice, computerChoice) {
 function playGame(playerChoice) {
     const computerChoice = getComputerChoice();
     const result = determineWinner(playerChoice, computerChoice);
-    resultDisplay.textContent = `Вы выбрали ${playerChoice}, компьютер выбрал ${computerChoice}. ${result}`;
+    resultDisplay.innerHTML = `Вы выбрали <strong>${playerChoice}</strong>, компьютер выбрал <strong>${computerChoice}</strong>. ${result}`;
     
     // Добавляем результат в историю
     stats.history.push(`Вы: ${playerChoice}, Компьютер: ${computerChoice} - ${result}`);
