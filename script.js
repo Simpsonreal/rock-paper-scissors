@@ -1,3 +1,8 @@
+// Инициализация TON Connect (для получения адреса игрока)
+const tonConnect = new TonConnectSDK.TonConnect({
+    manifestUrl: 'https://simpsonreal.github.io/rock-paper-scissors/tonconnect-manifest.json'
+});
+
 // Проверка доступности localStorage
 let localStorageAvailable = true;
 try {
@@ -23,18 +28,22 @@ const resultDisplay = document.getElementById("result");
 const historyList = document.getElementById("history-list");
 const resetButton = document.getElementById("reset");
 const scoreDisplay = document.getElementById("score");
+const betScreen = document.getElementById("bet-screen");
+const gameScreen = document.getElementById("game");
+const placeBetButton = document.getElementById("placeBet");
+const checkPaymentButton = document.getElementById("checkPayment");
 
 let stats = {
     playerScore: 0,
     computerScore: 0,
     history: []
 };
+let currentInvoiceId = null; // Для хранения ID счёта
 
 // Загрузка статистики из localStorage, если доступно
 if (localStorageAvailable && localStorage.getItem("gameStats")) {
     try {
         stats = JSON.parse(localStorage.getItem("gameStats"));
-        // Проверяем, что stats.history существует, и инициализируем, если нет
         if (!stats.history || !Array.isArray(stats.history)) {
             stats.history = [];
         }
@@ -42,7 +51,6 @@ if (localStorageAvailable && localStorage.getItem("gameStats")) {
         updateHistory();
     } catch (e) {
         console.error("Ошибка при загрузке статистики: ", e);
-        // Сбрасываем stats, если данные повреждены
         stats = {
             playerScore: 0,
             computerScore: 0,
@@ -50,6 +58,9 @@ if (localStorageAvailable && localStorage.getItem("gameStats")) {
         };
     }
 }
+
+// Показываем экран ставок при загрузке
+betScreen.style.display = "flex";
 
 function updateScore() {
     if (scoreDisplay) {
@@ -65,7 +76,6 @@ function updateHistory() {
         return;
     }
     historyList.innerHTML = "";
-    // Проверяем, что stats.history существует
     if (!stats.history || !Array.isArray(stats.history)) {
         stats.history = [];
     }
@@ -109,19 +119,88 @@ function determineWinner(playerChoice, computerChoice) {
     ) {
         stats.playerScore++;
         updateScore();
-        return "Вы выиграли!";
+        return "Вы выиграли! Награда: 0.015 TON";
     }
     stats.computerScore++;
     updateScore();
-    return "Компьютер выиграл!";
+    return "Компьютер выиграл! Вы потеряли ставку.";
+}
+
+// Функция для создания счёта через @CryptoBot
+async function createInvoice() {
+    try {
+        const response = await fetch('https://твой_сервер/create-invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: 0.01, // 0.01 TON
+                asset: 'TON',
+                description: 'Ставка на игру Камень-Ножницы-Бумага'
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            currentInvoiceId = data.invoiceId;
+            resultDisplay.textContent = `Счёт создан! Оплати через @CryptoBot: ${data.payUrl}`;
+            return true;
+        } else {
+            resultDisplay.textContent = 'Не удалось создать счёт. Попробуй снова.';
+            return false;
+        }
+    } catch (e) {
+        console.error("Ошибка при создании счёта:", e);
+        resultDisplay.textContent = 'Ошибка при создании счёта. Попробуй снова.';
+        return false;
+    }
+}
+
+// Функция для проверки оплаты
+async function checkPayment() {
+    if (!currentInvoiceId) {
+        resultDisplay.textContent = 'Сначала создай счёт!';
+        return false;
+    }
+    try {
+        const response = await fetch('https://твой_сервер/check-invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invoiceId: currentInvoiceId })
+        });
+        const data = await response.json();
+        if (data.status === 'paid') {
+            resultDisplay.textContent = 'Оплата подтверждена! Сделай свой выбор.';
+            betScreen.style.display = "none";
+            gameScreen.style.display = "flex";
+            return true;
+        } else {
+            resultDisplay.textContent = 'Оплата ещё не подтверждена. Попробуй снова через несколько секунд.';
+            return false;
+        }
+    } catch (e) {
+        console.error("Ошибка при проверке оплаты:", e);
+        resultDisplay.textContent = 'Ошибка при проверке оплаты. Попробуй снова.';
+        return false;
+    }
 }
 
 function playGame(playerChoice) {
     try {
         const computerChoice = getComputerChoice();
         const result = determineWinner(playerChoice, computerChoice);
+        const playerAddress = tonConnect.wallet?.account?.address; // Адрес кошелька игрока
 
-        if (resultDisplay) {
+        // Отправка результата на сервер для обработки награды
+        fetch('https://твой_сервер/game-result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                playerAddress,
+                result: result.includes('Вы выиграли') ? 'win' : 'lose',
+                gameId: currentInvoiceId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
             resultDisplay.innerHTML = "";
             const playerText = document.createTextNode("Вы выбрали ");
             const playerChoiceElement = document.createElement("strong");
@@ -129,18 +208,19 @@ function playGame(playerChoice) {
             const separator = document.createTextNode(", компьютер выбрал ");
             const computerChoiceElement = document.createElement("strong");
             computerChoiceElement.textContent = computerChoice;
-            const resultText = document.createTextNode(`. ${result}`);
+            const resultText = document.createTextNode(`. ${result} ${data.message}`);
 
             resultDisplay.appendChild(playerText);
             resultDisplay.appendChild(playerChoiceElement);
             resultDisplay.appendChild(separator);
             resultDisplay.appendChild(computerChoiceElement);
             resultDisplay.appendChild(resultText);
-        } else {
-            console.error("resultDisplay не найден");
-        }
+        })
+        .catch(e => {
+            console.error('Ошибка при отправке результата:', e);
+            resultDisplay.textContent = result + ' Ошибка при обработке награды.';
+        });
 
-        // Проверяем, что stats.history существует
         if (!stats.history || !Array.isArray(stats.history)) {
             stats.history = [];
         }
@@ -154,10 +234,25 @@ function playGame(playerChoice) {
                 console.error("Не удалось сохранить статистику в localStorage: ", e);
             }
         }
+
+        // После игры возвращаем экран ставок
+        gameScreen.style.display = "none";
+        betScreen.style.display = "flex";
+        currentInvoiceId = null; // Сбрасываем ID счёта
     } catch (e) {
         console.error("Ошибка в playGame: ", e);
     }
 }
+
+// Обработчик кнопки "Создать счёт"
+placeBetButton.addEventListener("click", async () => {
+    await createInvoice();
+});
+
+// Обработчик кнопки "Проверить оплату"
+checkPaymentButton.addEventListener("click", async () => {
+    await checkPayment();
+});
 
 // Проверяем, что кнопки существуют, и добавляем обработчики
 if (buttons && buttons.length > 0) {
