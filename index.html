@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Камень, Ножницы, Бумага</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -39,13 +40,13 @@
                          -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
             margin-top: 10px;
         }
-        #game {
-            display: flex;
+        #bet-screen, #game {
+            display: none;
             justify-content: center;
             gap: 20px;
             margin: 20px 0;
         }
-        button {
+        #bet-screen button, #game button {
             background: linear-gradient(135deg, #a8e6cf, #7cc4a4);
             border: none;
             border-radius: 5px;
@@ -54,17 +55,17 @@
             transition: transform 0.1s, box-shadow 0.2s;
             box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.2);
         }
-        button img {
-            width: 50px;
-            height: 50px;
-        }
-        button:hover {
+        #bet-screen button:hover, #game button:hover {
             transform: scale(1.1);
             box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.3), -8px -8px 15px rgba(255, 255, 255, 0.3);
         }
-        button:active {
+        #bet-screen button:active, #game button:active {
             transform: scale(0.95);
             box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1), -3px -3px 5px rgba(255, 255, 255, 0.1);
+        }
+        #game button img {
+            width: 50px;
+            height: 50px;
         }
         #result {
             font-size: 1.2em;
@@ -152,6 +153,11 @@
     <div id="score-container">
         <span id="score">0:0</span>
     </div>
+    <div id="bet-screen">
+        <h2>Сделай ставку (0.01 TON за игру)</h2>
+        <button id="placeBet">Создать счёт</button>
+        <button id="checkPayment">Проверить оплату</button>
+    </div>
     <div id="game">
         <button id="rock"><img src="images/Rock.png" alt="Камень"></button>
         <button id="scissors"><img src="images/Scissors.png" alt="Ножницы"></button>
@@ -164,6 +170,6 @@
     </div>
     <button id="reset">Сбросить статистику</button>
 
-    <script src="script.js?v=85"></script>
+    <script src="script.js?v=88"></script>
 </body>
 </html>
